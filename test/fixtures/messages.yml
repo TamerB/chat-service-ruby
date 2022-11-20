@@ -2,15 +2,18 @@
 
 one:
   token: abc
+  chat_number: 2
   number: 1
-  messages_number: 1
+  body: MyText
 
 two:
   token: abc
+  chat_number: 2
   number: 2
-  messages_number: 1
+  body: MyText
 
 three:
   token: def
-  number: 1
-  messages_number: 1
+  chat_number: 1
+  number: 3
+  body: MyText

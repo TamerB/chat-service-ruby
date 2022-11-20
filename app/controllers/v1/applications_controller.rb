@@ -1,5 +1,4 @@
 class V1::ApplicationsController < ApplicationController
-    before_action :set_application, only: [:show, :update]
     rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
 
     def create
@@ -14,10 +13,16 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def show
-        render :show, status: :ok
+        @application = Application.where(token: params[:token]).includes(:chats).first
+        if @application.nil?
+            record_not_found
+        else
+            render :show, status: :ok
+        end
     end
 
     def update
+        @application = Application.find(params[:token])
         if @application.update(application_params)
             @status = 'ok'
             render :create, status: :ok
@@ -32,10 +37,6 @@ class V1::ApplicationsController < ApplicationController
 
     def application_params
         params.require(:application).permit(:name)
-    end
-
-    def set_application
-        @application = Application.find(params[:token])
     end
 
     def record_not_found

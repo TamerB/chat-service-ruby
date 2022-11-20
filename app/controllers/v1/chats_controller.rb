@@ -1,5 +1,4 @@
 class V1::ChatsController < ApplicationController
-    before_action :set_chat, only: [:show, :update]
     rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
 
     def create
@@ -15,6 +14,7 @@ class V1::ChatsController < ApplicationController
     end
 
     def show
+        @chat = Chat.where(token: params[:application_token], number: params[:number]).includes(:messages).first
         render :show, status: :ok
     end
 
@@ -22,10 +22,6 @@ class V1::ChatsController < ApplicationController
 
     def chat_params
         params.require(:chat).permit(:token)
-    end
-
-    def set_chat
-        @chat = Chat.where(token: params[:application_token], number: params[:number]).first
     end
 
     def record_not_found

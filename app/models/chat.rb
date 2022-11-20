@@ -2,6 +2,7 @@ class Chat < ApplicationRecord
   self.primary_keys = :token, :number
   before_create :increment_number
   belongs_to :application, foreign_key: :token
+  has_many :messages, :foreign_key => [:token, :chat_number]
 
   protected
 
@@ -11,6 +12,5 @@ class Chat < ApplicationRecord
     if !last_chat.nil?
       self.number = last_chat.number + 1
     end
-    puts self.number
   end
 end

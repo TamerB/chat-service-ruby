@@ -8,7 +8,7 @@ class ChatTest < ActiveSupport::TestCase
 
   test "should save chat with token" do
     chat = Chat.new
-    chat.token = 'abc'
+    chat.token = 'def'
     assert chat.save, "Saved the chat with a token"
   end
 end

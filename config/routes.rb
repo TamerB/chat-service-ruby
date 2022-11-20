@@ -6,7 +6,9 @@ Rails.application.routes.draw do
 
   namespace :v1, defaults: { format: :json} do
     resources :applications, param: :token, except: [:index, :destroy] do
-      resources :chats, param: :number, only: [:show, :create]
+      resources :chats, param: :number, only: [:show, :create] do
+        resources :messages, param: :number, except: [:destroy]
+      end
     end
   end
 end
