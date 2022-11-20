@@ -6,7 +6,7 @@ class ApplicationTest < ActiveSupport::TestCase
     assert_not application.save, "Saved the application without a name"
   end
 
-  test "should save article with name" do
+  test "should save application with name" do
     application = Application.new
     application.name = 'test1'
     assert application.save, "Saved the application with a name"

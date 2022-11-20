@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   namespace :v1, defaults: { format: :json} do
-    resources :applications, param: :token, except: [:index, :destroy]
+    resources :applications, param: :token, except: [:index, :destroy] do
+      resources :chats, param: :number, only: [:show, :create]
+    end
   end
 end
