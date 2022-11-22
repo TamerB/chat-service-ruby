@@ -1,14 +1,13 @@
 class V1::ApplicationsController < ApplicationController
-    rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+    include V1::ErrorResponses::Response
+    rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
         @application = Application.new(application_params)
         if @application.save
             render :create, status: :created
         else
-            @message = 'name is required'
-            @status = 400
-            render :error, status: :bad_request
+            render_error('name is required', 400)
         end
     end
 
@@ -27,9 +26,7 @@ class V1::ApplicationsController < ApplicationController
             @status = 'ok'
             render :create, status: :ok
         else
-            @message = 'unprocessable entity'
-            @status = 422
-            render :error, status: :unprocessable_entity
+            render_error('unprocessable entity', 422)
         end
     end
 
@@ -37,11 +34,5 @@ class V1::ApplicationsController < ApplicationController
 
     def application_params
         params.require(:application).permit(:name)
-    end
-
-    def record_not_found
-        @message = 'not found'
-        @status = 404
-        render :error, status: :not_found
     end
 end

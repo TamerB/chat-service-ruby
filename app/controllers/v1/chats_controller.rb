@@ -1,5 +1,6 @@
 class V1::ChatsController < ApplicationController
-    rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+    include V1::ErrorResponses::Response
+    rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
         application = Application.find(params[:application_token])
@@ -7,9 +8,7 @@ class V1::ChatsController < ApplicationController
         if @chat.save
             render :create, status: :created
         else
-            @message = 'token is required'
-            @status = 400
-            render :error, status: :bad_request
+            render_error('token is required', 400)
         end
     end
 
@@ -22,11 +21,5 @@ class V1::ChatsController < ApplicationController
 
     def chat_params
         params.require(:chat).permit(:token)
-    end
-
-    def record_not_found
-        @message = 'not found'
-        @status = 404
-        render :error, status: :not_found
     end
 end

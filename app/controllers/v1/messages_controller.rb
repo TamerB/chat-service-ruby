@@ -1,40 +1,33 @@
 class V1::MessagesController < ApplicationController
+    include V1::ErrorResponses::Response
     before_action :set_message, only: [:show, :update]
-    rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+    rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
         chat = Chat.where(token: params[:application_token], number: params[:chat_number]).first
         if chat.nil?
-            record_not_found
+            render_error('not found', 404)
         elsif params[:body].nil?
-            @message = 'body is required'
-            @status = 400
-            render :error, status: :bad_request
+            render_error('body is required', 400)
         else
             @message = Message.new(token: chat.token, chat_number: chat.number, body: params[:body])
             if @message.save
                 render :create, status: :created
             else
-                @message = 'missing required values'
-                @status = 400
-                render :error, status: :bad_request
+                render_error('missing required values', 400)
             end
         end
     end
 
     def update
         if params[:body].nil?
-            @message = 'body is required'
-            @status = 400
-            render :error, status: :bad_request
+            render_error('body is required', 400)
         else
             if @message.update(message_params)
                 @status = 'ok'
                 render :create, status: :ok
             else
-                @message = 'unprocessable entity'
-                @status = 422
-                render :error, status: :unprocessable_entity
+                render_error('unprocessable entity', 422)
             end
         end
     end
@@ -46,7 +39,7 @@ class V1::MessagesController < ApplicationController
 
     def show
         if @message.nil?
-            record_not_found
+            render_error('not found', 404)
         else
             render :show, status: :ok
         end
@@ -60,11 +53,5 @@ class V1::MessagesController < ApplicationController
 
     def set_message
         @message = Message.where(token: params[:application_token], chat_number: params[:chat_number], number: params[:number]).first
-    end
-
-    def record_not_found
-        @message = 'not found'
-        @status = 404
-        render :error, status: :not_found
     end
 end
