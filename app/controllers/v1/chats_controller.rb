@@ -1,25 +1,24 @@
 class V1::ChatsController < ApplicationController
     include V1::ErrorResponses::Response
-    rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
-        application = Application.find(params[:application_token])
-        @chat = Chat.new(token: application.token)
-        if @chat.save
+        response = $writeClient.call({action: 'chat.create', params: params['application_token']})
+        if response['status'].to_i == 201
+            @chat = response['data']
             render :create, status: :created
         else
-            render_error('token is required', 400)
+            render_error(response['data'], response['status'])
         end
     end
 
     def show
-        @chat = Chat.where(token: params[:application_token], number: params[:number]).includes(:messages).first
-        render :show, status: :ok
-    end
-
-    private
-
-    def chat_params
-        params.require(:chat).permit(:token)
+        response = $readClient.call({action: 'chat.show', params: params})
+        if response['status'].to_i == 200
+            @chat = response['data']['chat']
+            @chat['messages'] = response['data']['messages']
+            render :show, status: :ok
+        else
+            render_error(response['data'], response['status'])
+        end
     end
 end
