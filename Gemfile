@@ -6,8 +6,8 @@ ruby "3.1.2"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4"
 
-# Use mysql as the database for Active Record
-gem "mysql2", "~> 0.5"
+# Use sqlite3 as the database for Active Record
+gem "sqlite3", "~> 1.4"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
@@ -37,6 +37,7 @@ gem "bootsnap", require: false
 gem "rack-cors"
 
 gem 'composite_primary_keys', '~> 14.0', '>= 14.0.4'
+gem 'bunny', '~> 2.19'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

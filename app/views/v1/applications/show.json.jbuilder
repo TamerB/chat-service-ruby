@@ -1,16 +1,8 @@
+json.status @status
+json.message @message
 json.data do
-    json.application do
-        json.token @application.token
-        json.name @application.name
-        json.chats_number @application.chats_number
-        json.chats! do
-            json.array! @application.chats do |chat|
-                json.call(
-                    chat,
-                    :number,
-                    :messages_number
-                )
-            end
-        end
+    json.application do |json|
+        json.(@application, :token, :name, :chats_number, :created_at, :updated_at)
+        json.chats @application.chats, :number, :messages_number, :created_at, :updated_at
     end
 end

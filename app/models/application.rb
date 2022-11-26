@@ -1,14 +1,15 @@
-class Application < ApplicationRecord
-    has_many :chats, foreign_key: :token
-    validates :name, :presence => true, :length => { :minimum => 5}
-    before_create :generate_token
+class Application
+    attr_reader :token, :name, :chats_number, :created_at, :updated_at, :chats
+    def initialize(params)
+        @token = params['token']
+        @name = params['name']
+        @chats_number = params['chats_number']
+        @created_at = params['created_at']
+        @updated_at = params['updated_at']
+        @chats = []
+    end
 
-    protected
-
-    def generate_token
-        self.token = loop do
-        safe_token = SecureRandom.urlsafe_base64(nil, false)
-        break safe_token unless Application.exists?(token: safe_token)
-        end
+    def set_chats(params)
+        @chats = params.to_a.map{|chat| Chat.new(chat)}
     end
 end

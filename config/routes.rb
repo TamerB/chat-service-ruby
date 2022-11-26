@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :applications, param: :token, except: [:index, :destroy] do
       resources :chats, param: :number, only: [:show, :create] do
         resources :messages, param: :number, except: [:destroy]
+        get 'search/:phrase', to: 'messages#search'
       end
     end
   end

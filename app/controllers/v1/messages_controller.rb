@@ -1,57 +1,64 @@
 class V1::MessagesController < ApplicationController
     include V1::ErrorResponses::Response
-    before_action :set_message, only: [:show, :update]
     rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
-        chat = Chat.where(token: params[:application_token], number: params[:chat_number]).first
-        if chat.nil?
-            render_error('not found', 404)
-        elsif params[:body].nil?
-            render_error('body is required', 400)
+        response = $writeClient.call({action: 'message.create', params: params})
+        @status = response['status']
+        if response['status'].to_i == 201
+            @message_data = Message.new(response['data'])
+            @message = 'Message created successfully'
+            render :create, status: :created
         else
-            @message = Message.new(token: chat.token, chat_number: chat.number, body: params[:body])
-            if @message.save
-                render :create, status: :created
-            else
-                render_error('missing required values', 400)
-            end
+            render_error(response['data'], response['status'])
         end
     end
 
     def update
-        if params[:body].nil?
-            render_error('body is required', 400)
+        response = $writeClient.call({action: 'message.update', params: params})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @message_data = Message.new(response['data'])
+            @message = 'Message updated successfully'
+            render :create, status: :ok
         else
-            if @message.update(message_params)
-                @status = 'ok'
-                render :create, status: :ok
-            else
-                render_error('unprocessable entity', 422)
-            end
+            render_error(response['data'], response['status'])
         end
     end
 
     def index
-        @messages = Message.where(token: params[:application_token], chat_number: params[:chat_number]).order('created_at')
-        render :index, status: :ok
-    end
-
-    def show
-        if @message.nil?
-            render_error('not found', 404)
+        response = $readClient.call({action: 'message.index', params: params})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @messages = response['data']['messages'].map{|msg| Message.new(msg)}
+            @message = 'Messages found successfully'
+            render :index, status: :ok
         else
-            render :show, status: :ok
+            render_error(response['data'], response['status'])
         end
     end
 
-    private
-
-    def message_params
-        params.require(:message).permit(:body)
+    def show
+        response = $readClient.call({action: 'message.show', params: params})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @message_data = Message.new(response['data'])
+            @message = 'Message found successfully'
+            render :show, status: :ok
+        else
+            render_error(response['data'], response['status'])
+        end
     end
 
-    def set_message
-        @message = Message.where(token: params[:application_token], chat_number: params[:chat_number], number: params[:number]).first
+    def search
+        response = $readClient.call({action: 'message.search', params: params})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @messages = response['data'].map{|message| Message.new(message)}
+            @message = 'Messages found successfully'
+            render :index, status: :ok
+        else
+            render_error(response['data'], response['status'])
+        end
     end
 end

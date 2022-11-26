@@ -1,32 +1,40 @@
 class V1::ApplicationsController < ApplicationController
     include V1::ErrorResponses::Response
-    rescue_from ActiveRecord::RecordNotFound, with: -> {render_error('not found', 404)}
 
     def create
-        @application = Application.new(application_params)
-        if @application.save
+        response = $writeClient.call({action: 'application.create', params: application_params})
+        @status = response['status']
+        if response['status'].to_i == 201
+            @application = Application.new(response['data'])
+            @message = 'Application created successfully'
             render :create, status: :created
         else
-            render_error('name is required', 400)
+            render_error(response['data'], response['status'])
         end
     end
 
     def show
-        @application = Application.where(token: params[:token]).includes(:chats).first
-        if @application.nil?
-            record_not_found
-        else
+        response = $readClient.call({action: 'application.show', params: params['token']})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @application = Application.new(response['data']['application'])
+            @application.set_chats(response['data']['chats'])
+            @message = 'Application found successfully'
             render :show, status: :ok
+        else
+            render_error(response['data'], response['status'])
         end
     end
 
     def update
-        @application = Application.find(params[:token])
-        if @application.update(application_params)
-            @status = 'ok'
+        response = $writeClient.call({action: 'application.update', params: params})
+        @status = response['status']
+        if response['status'].to_i == 200
+            @application = Application.new(response['data'])
+            @message = 'Application updated successfully'
             render :create, status: :ok
         else
-            render_error('unprocessable entity', 422)
+            render_error(response['data'], response['status'])
         end
     end
 
