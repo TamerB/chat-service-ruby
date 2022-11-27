@@ -3,7 +3,7 @@ class RabbitMqClient
                 :channel, :server_queue_name, :reply_queue, :exchange
 
     def initialize(server_queue_name)
-        @connection = Bunny.new(automatically_recover: false)
+        @connection = Bunny.new(host: ENV.fetch('MQ_HOST'), automatically_recover: false)
         @connection.start
 
         @channel = connection.create_channel
