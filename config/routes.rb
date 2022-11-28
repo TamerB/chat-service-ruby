@@ -12,4 +12,7 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get 'healthz', to: 'health#health'
+  get 'readyz', to: 'health#health'
 end
