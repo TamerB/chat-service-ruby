@@ -14,6 +14,7 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def show
+        return render_error('token is required', 400) if params['token'].nil?
         response = $readClient.call({action: 'application.show', params: params['token']})
         @status = response['status']
         if response['status'].to_i == 200
@@ -27,6 +28,7 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def update
+        return render_error('token is required', 400) if params['token'].nil?
         response = $writeClient.call({action: 'application.update', params: params})
         @status = response['status']
         if response['status'].to_i == 200

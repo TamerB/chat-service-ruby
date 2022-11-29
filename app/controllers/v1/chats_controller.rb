@@ -2,6 +2,7 @@ class V1::ChatsController < ApplicationController
     include V1::ErrorResponses::Response
 
     def create
+        return render_error('token is required', 400) if params['application_token'].nil?
         response = $writeClient.call({action: 'chat.create', params: params['application_token']})
         @status = response['status']
         if response['status'].to_i == 201
@@ -14,6 +15,8 @@ class V1::ChatsController < ApplicationController
     end
 
     def show
+        return render_error('token is required', 400) if params['application_token'].nil?
+        return render_error('chat number is required', 400) if params['number'].nil?
         response = $readClient.call({action: 'chat.show', params: params})
         @status = response['status']
         if response['status'].to_i == 200
