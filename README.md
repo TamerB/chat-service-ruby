@@ -5,22 +5,24 @@ This service provides a REST API in which users can control applications, applic
 
 This service has the following API endpoints:
 ```
-/readyz                                                         GET
-/healthz                                                        GET
+/readyz                                                                     GET
+/healthz                                                                    GET
 
-/applications/{name}                                            POST
-/applications/{token}                                           PUT
-/applications/{token}                                           GET
+/api-docs                                                                   GET
 
-/applications/{token}/chats                                     POST
-/applications/{token}/chats/{number}                            GET
+/applications/{name}                                                        POST
+/applications/{token}                                                       PUT
+/applications/{token}                                                       GET
 
-/applications/{token}/chats/{number}/messages                   POST
-/applications/{token}/chats/{number}/messages/{number}          PUT
-/applications/{token}/chats/{number}/messages                   GET
-/applications/{token}/chats/{number}/messages/{number}          GET
+/applications/{application_token}/chats                                     POST
+/applications/{application_token}/chats/{number}                            GET
 
-/applications/{token}/chats/{number}/search/{phrase}            GET
+/applications/{application_token}/chats/{chat_number}/messages              POST
+/applications/{application_token}/chats/{chat_number}/messages/{number}     PUT
+/applications/{application_token}/chats/{chat_number}/messages              GET
+/applications/{application_token}/chats/{chat_number}/messages/{number}     GET
+
+/applications/{application_token}/chats/{chat_number}/search/{phrase}       GET
 ```
 
 ## Developer setup
@@ -56,13 +58,15 @@ Ports which the service will be listening on to `http` requests.
 RabbitMQ host
 
 ## Build Docker image
+From the project's root directory, run the following command in terminal
 ```
 docker build -t chat-master:latest .
 ```
+If you change the docker image name or tag, you will need to change them in `docker-compose.yml` too.
+# Note: The build might fail if `docker-compose/db/master/data` and `docker-compose/db/master/data` have files that require `sudo` permissions. In this case you need to move docker-compose direcory, docker-compose.yml, build.sh, stop.sh to another directory outside this directory and use them from there (which I recommend doing anyway).
 
 ## Test
 To run tests, from the project's root directory, run `rails test ./...` in terminal.
-
 
 ## docker-compose
 To start all services using docker-compose run `./build.sh`. To stop them run `./stop.sh`

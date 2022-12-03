@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -15,4 +17,6 @@ Rails.application.routes.draw do
 
   get 'healthz', to: 'health#health'
   get 'readyz', to: 'health#health'
+
+  match '*path', to: "errors#handle_root_not_found", via: [:get, :post]
 end
