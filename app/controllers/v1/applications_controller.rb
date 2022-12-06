@@ -1,6 +1,4 @@
 class V1::ApplicationsController < ApplicationController
-    include V1::ErrorResponses::Response
-
     def create
         response = $writeClient.call({action: 'application.create', params: application_params})
         @status = response['status']
@@ -15,16 +13,22 @@ class V1::ApplicationsController < ApplicationController
 
     def show
         return render_error('token is required', 400) if params['token'].nil?
-        response = $readClient.call({action: 'application.show', params: params['token']})
-        @status = response['status']
-        if response['status'].to_i == 200
-            @application = Application.new(response['data']['application'])
-            @application.set_chats(response['data']['chats'])
-            @message = 'Application found successfully'
-            render :show, status: :ok
-        else
-            render_error(response['data'], response['status'])
+        @message = 'Application found successfully'
+        @status = 200
+        application = read_cache('application-' + params['token'])
+        if application.blank?
+            response = $readClient.call({action: 'application.show', params: params['token']})
+            @status = response['status']
+            if response['status'].to_i == 200
+                application = response['data']['application'].merge({chats: response['data']['chats']})
+                write_cache('application-' + application['token'], application)
+            else
+                return render_error(response['data'], response['status'])
+            end
         end
+        @application = Application.new(application)
+        @chats = application[:chats].map{|chat| Chat.new(chat)}
+        render :show, status: :ok
     end
 
     def update
@@ -32,6 +36,7 @@ class V1::ApplicationsController < ApplicationController
         response = $writeClient.call({action: 'application.update', params: params})
         @status = response['status']
         if response['status'].to_i == 200
+            remove_cache('application-' + params['token'])
             @application = Application.new(response['data'])
             @message = 'Application updated successfully'
             render :create, status: :ok

@@ -88,27 +88,27 @@ services:
       - 9200:9200
     mem_limit: 300m
 
-  # # Redis master
-  # redis-master:
-  #   image: bitnami/redis:7.0.5
-  #   container_name: "redis_master"
-  #   ports:
-  #     - 6379
-  #   env_file:
-  #     - ./docker-compose/redis/redis_master.env
-  #   volumes:
-  #     - ./docker-compose/redis/data:/bitnami
+  # Redis master
+  redis-master:
+    image: bitnami/redis:7.0.5
+    container_name: "redis_master"
+    ports:
+      - 6379:6379
+    env_file:
+      - ./docker-compose/redis/redis_master.env
+    volumes:
+      - ./docker-compose/redis/data:/bitnami
 
-  # # Redis replica
-  # redis-replica:
-  #   image: bitnami/redis:7.0.5
-  #   container_name: "redis_replica"
-  #   ports:
-  #     - 6379
-  #   depends_on:
-  #     - redis-master
-  #   env_file:
-  #     - ./docker-compose/redis/redis_replica.env
+  # Redis replica
+  redis-replica:
+    image: bitnami/redis:7.0.5
+    container_name: "redis_replica"
+    ports:
+      - 6379
+    depends_on:
+      - redis-master
+    env_file:
+      - ./docker-compose/redis/redis_replica.env
   webmaster:
     image: chat-master:latest
     container_name: 'web_master'

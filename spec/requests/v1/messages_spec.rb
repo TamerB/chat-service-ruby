@@ -74,6 +74,7 @@ RSpec.describe 'v1/messages', type: :request do
     get('list messages') do
       tags "messages"
       produces "application/json"
+      parameter name: 'page', in: :path, type: :string, description: 'page number'
       response '200', 'Appliction found' do
         schema type: :object,
           properties: {
@@ -229,6 +230,7 @@ RSpec.describe 'v1/messages', type: :request do
     parameter name: 'application_token', in: :path, type: :string, description: 'application_ token'
     parameter name: 'chat_number', in: :path, type: :string, description: 'chat number'
     parameter name: 'phrase', in: :path, type: :string, description: 'search phrase'
+    parameter name: 'page', in: :path, type: :string, description: 'page number'
 
     get('search message') do
       tags "messages"

@@ -27,7 +27,24 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
 
-    config.cache_store = :null_store
+    config.cache_store = :redis_cache_store, { 
+      host: ENV['REDIS_HOST'],
+      port: ENV['REDIS_PORT'].to_i,
+      db: ENV['REDIS_DB'].to_i,
+      password: ENV['REDIS_PASS'],
+      namespace: 'cache',
+      connect_timeout:    30,  # Defaults to 20 seconds
+      read_timeout:       0.2, # Defaults to 1 second
+      write_timeout:      0.2, # Defaults to 1 second
+      reconnect_attempts: 1,
+      error_handler: -> (method:, returning:, exception:) {
+        x = {method: method, returning: returning, exception: exception}
+        puts x
+        # Report errors to Sentry as warnings
+        # Raven.capture_exception exception, level: 'warning',
+        #   tags: { method: method, returning: returning }
+      }
+    }
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).

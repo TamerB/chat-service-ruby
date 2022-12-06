@@ -347,6 +347,13 @@ paths:
       summary: list messages
       tags:
       - messages
+      parameters:
+      - name: page
+        in: path
+        description: page number
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: Appliction found
@@ -510,6 +517,12 @@ paths:
     - name: phrase
       in: path
       description: search phrase
+      required: true
+      schema:
+        type: string
+    - name: page
+      in: path
+      description: page number
       required: true
       schema:
         type: string

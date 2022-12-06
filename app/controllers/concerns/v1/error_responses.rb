@@ -5,7 +5,7 @@ module V1::ErrorResponses
         def render_error(message, code)
             @message = message
             @code = code
-            render :error, status: @code
+            render "v1/error", status: @code
         end
-end
+    end
 end
