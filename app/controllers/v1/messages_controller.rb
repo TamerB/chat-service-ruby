@@ -1,8 +1,18 @@
 class V1::MessagesController < ApplicationController
     def create
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['chat_number'].nil?
-        return render_error('body is required', 400) if params['body'].nil?
+        logger.info "Message create started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Message create cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['chat_number'].blank?
+            logger.warn "Message create cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
+        if params['body'].blank?
+            logger.warn "Message create cancelled (body is required): #{params}"
+            return render_error('body is required', 400)
+        end
         response = $writeClient.call({action: 'message.create', params: params})
         @status = response['status']
         if response['status'].to_i == 201
@@ -17,10 +27,23 @@ class V1::MessagesController < ApplicationController
     end
 
     def update
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['chat_number'].nil?
-        return render_error('message number is required', 400) if params['number'].nil?
-        return render_error('body is required', 400) if params['body'].nil?
+        logger.info "Message update started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Message update cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['chat_number'].blank?
+            logger.warn "Message update cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
+        if params['number'].blank?
+            logger.warn "Message update cancelled (message number is required): #{params}"
+            return render_error('message number is required', 400)
+        end
+        if params['body'].blank?
+            logger.warn "Message update cancelled (body is required): #{params}"
+            return render_error('body is required', 400)
+        end
         response = $writeClient.call({action: 'message.update', params: params})
         @status = response['status']
         if response['status'].to_i == 200
@@ -36,8 +59,15 @@ class V1::MessagesController < ApplicationController
     end
 
     def index
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['chat_number'].nil?
+        logger.info "Messages index started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Messages index cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['chat_number'].blank?
+            logger.warn "Messages index cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
         @message = 'Messages found successfully'
         @status = 200
         temp = read_cache('msgs-' + params['application_token'] + '-' + params['chat_number'] + '-' + (params['page'] || ''))
@@ -61,9 +91,19 @@ class V1::MessagesController < ApplicationController
     end
 
     def show
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['chat_number'].nil?
-        return render_error('message number is required', 400) if params['number'].nil?
+        logger.info "Message show started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Message show cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['chat_number'].blank?
+            logger.warn "Message show cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
+        if params['number'].blank?
+            logger.warn "Message show cancelled (message number is required): #{params}"
+            return render_error('message number is required', 400)
+        end
         @message = 'Message found successfully'
         @status = 200
         message_data = read_cache('msg-' + params['application_token'] + '-' + params['chat_number'] + '-' + params['number'])
@@ -82,8 +122,15 @@ class V1::MessagesController < ApplicationController
     end
 
     def search
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['chat_number'].nil?
+        logger.info "Messages search started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Messages search cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['chat_number'].blank?
+            logger.warn "Messages search cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
         @message = 'Messages found successfully'
         @status = 200
         temp = read_cache('msgs-' + params['application_token'] + '-' + params['chat_number'] + '-' + 'search-' + (params['page'] || ''))

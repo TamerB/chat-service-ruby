@@ -31,7 +31,6 @@ RSpec.describe 'v1/messages', type: :request do
                     token: { type: :string },
                     chat_number: { type: :integer },
                     number: { type: :integer },
-                    messages_number: { type: :integer },
                     body: { type: :string },
                     created_at: { type: :string },
                     updated_at: { type: :string }
@@ -75,26 +74,27 @@ RSpec.describe 'v1/messages', type: :request do
       tags "messages"
       produces "application/json"
       parameter name: 'page', in: :path, type: :string, description: 'page number'
-      response '200', 'Appliction found' do
+      response '200', 'messages found' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string },
             data: { type: :object,
               properties: {
+                page: { type: :integer },
                 messages: { type: :array,
                   items: { type: :object,
                     properties: {
                       token: { type: :string },
                       chat_number: { type: :integer },
                       number: { type: :integer },
-                      messages_number: { type: :integer },
                       body: { type: :string },
                       created_at: { type: :string },
                       updated_at: { type: :string }
                     }
                   }
-                }
+                },
+                total: { type: :integer }
               }
             }
           },
@@ -143,7 +143,6 @@ RSpec.describe 'v1/messages', type: :request do
                     token: { type: :string },
                     chat_number: { type: :integer },
                     number: { type: :integer },
-                    messages_number: { type: :integer },
                     body: { type: :string },
                     created_at: { type: :string },
                     updated_at: { type: :string }
@@ -199,7 +198,6 @@ RSpec.describe 'v1/messages', type: :request do
                     token: { type: :string },
                     chat_number: { type: :integer },
                     number: { type: :integer },
-                    messages_number: { type: :integer },
                     body: { type: :string },
                     created_at: { type: :string },
                     updated_at: { type: :string }
@@ -243,19 +241,20 @@ RSpec.describe 'v1/messages', type: :request do
             message: { type: :string },
             data: { type: :object,
               properties: {
+                page: { type: :integer },
                 messages: { type: :array,
                   items: { type: :object,
                     properties: {
                       token: { type: :string },
                       chat_number: { type: :integer },
                       number: { type: :integer },
-                      messages_number: { type: :integer },
                       body: { type: :string },
                       created_at: { type: :string },
                       updated_at: { type: :string }
                     }
                   }
-                }
+                },
+                total: { type: :integer}
               }
             }
           },

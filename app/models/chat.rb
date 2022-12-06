@@ -8,8 +8,4 @@ class Chat < Application
         @updated_at = params['updated_at']
         @messages = []
     end
-
-    def set_messages(params)
-        @messages = params.to_a.map{|message| Message.new(message)}
-    end
 end

@@ -56,6 +56,56 @@ RSpec.describe 'v1/chats', type: :request do
           required: [ 'status', 'message' ]
       end
     end
+
+    get('list chats') do
+      tags "chats"
+      produces "application/json"
+      parameter name: 'page', in: :path, type: :string, description: 'page number'
+      response '200', 'chats found' do
+        schema type: :object,
+          properties: {
+            status: { type: :string },
+            message: { type: :string },
+            data: { type: :object,
+              properties: {
+                page: { type: :integer},
+                chats: { type: :array,
+                  items: { type: :object,
+                    properties: {
+                      token: { type: :string },
+                      number: { type: :integer },
+                      messages_number: { type: :integer },
+                      created_at: { type: :string },
+                      updated_at: { type: :string }
+                    }
+                  }
+                },
+                total: { type: :integer }
+              }
+            }
+          },
+          required: [ 'status', 'message' ]
+        let(:application_token) { '123' }
+        let(:number) { '123' }
+  
+        after do |example|
+          example.metadata[:response][:content] = {
+            'application/json' => {
+              example: JSON.parse(response.body, symbolize_names: true)
+            }
+          }
+        end
+        run_test!
+      end
+      response "404", "not found" do
+        schema type: :object,
+          properties: {
+            status: { type: :string },
+            message: { type: :string }
+          },
+          required: [ 'status', 'message' ]
+      end
+    end
   end
 
   path '/v1/applications/{application_token}/chats/{number}' do

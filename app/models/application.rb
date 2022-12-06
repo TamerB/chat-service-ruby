@@ -8,8 +8,4 @@ class Application
         @updated_at = params['updated_at']
         @chats = []
     end
-
-    def set_chats(params)
-        @chats = params.to_a.map{|chat| Chat.new(chat)}
-    end
 end

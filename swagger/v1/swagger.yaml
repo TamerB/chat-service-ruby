@@ -228,6 +228,54 @@ paths:
                 required:
                 - status
                 - message
+    get:
+      summary: list chats
+      tags:
+      - chats
+      parameters:
+      - name: page
+        in: path
+        description: page number
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: chats found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      chats:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            token:
+                              type: string
+                            number:
+                              type: integer
+                            messages_number:
+                              type: integer
+                            created_at:
+                              type: string
+                            updated_at:
+                              type: string
+                      total:
+                        type: integer
+                required:
+                - status
+                - message
   "/v1/applications/{application_token}/chats/{number}":
     parameters:
     - name: application_token
@@ -322,8 +370,6 @@ paths:
                             type: integer
                           number:
                             type: integer
-                          messages_number:
-                            type: integer
                           body:
                             type: string
                           created_at:
@@ -356,7 +402,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Appliction found
+          description: messages found
           content:
             application/json:
               schema:
@@ -369,6 +415,8 @@ paths:
                   data:
                     type: object
                     properties:
+                      page:
+                        type: integer
                       messages:
                         type: array
                         items:
@@ -380,14 +428,14 @@ paths:
                               type: integer
                             number:
                               type: integer
-                            messages_number:
-                              type: integer
                             body:
                               type: string
                             created_at:
                               type: string
                             updated_at:
                               type: string
+                      total:
+                        type: integer
                 required:
                 - status
                 - message
@@ -439,8 +487,6 @@ paths:
                             type: integer
                           number:
                             type: integer
-                          messages_number:
-                            type: integer
                           body:
                             type: string
                           created_at:
@@ -478,8 +524,6 @@ paths:
                           chat_number:
                             type: integer
                           number:
-                            type: integer
-                          messages_number:
                             type: integer
                           body:
                             type: string
@@ -545,6 +589,8 @@ paths:
                   data:
                     type: object
                     properties:
+                      page:
+                        type: integer
                       messages:
                         type: array
                         items:
@@ -556,14 +602,14 @@ paths:
                               type: integer
                             number:
                               type: integer
-                            messages_number:
-                              type: integer
                             body:
                               type: string
                             created_at:
                               type: string
                             updated_at:
                               type: string
+                      total:
+                        type: integer
                 required:
                 - status
                 - message

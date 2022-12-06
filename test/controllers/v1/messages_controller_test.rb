@@ -37,11 +37,4 @@ class V1::MessagesControllerTest < ActionDispatch::IntegrationTest
     post '/v1/applications/def/chats/1/messages', params: { body: nil}
     assert_response :bad_request
   end
-  # test 'can update message with required fields' do
-  #   put '/v1/applications/abc/chats/2/messages/1', params: { message: {body: 'test text'}, body: 'test text 123' }
-  #   assert_response :ok
-
-  #   data = JSON.parse(response.body)
-  #   assert_equal 'test text', data['data']['message']['body']
-  # end
 end

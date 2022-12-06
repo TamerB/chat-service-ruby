@@ -1,6 +1,10 @@
 class V1::ChatsController < ApplicationController
     def create
-        return render_error('token is required', 400) if params['application_token'].nil?
+        logger.info "Chat create started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Chat create cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
         response = $writeClient.call({action: 'chat.create', params: params['application_token']})
         @status = response['status']
         if response['status'].to_i == 201
@@ -15,7 +19,11 @@ class V1::ChatsController < ApplicationController
     end
 
     def index
-        return render_error('token is required', 400) if params['application_token'].nil?
+        logger.info "Chats index started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Chats index cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
         @message = 'Chats found successfully'
         @status = 200
         temp = read_cache('chats-' + params['application_token'] + '-' + (params['page'] || ''))
@@ -39,8 +47,15 @@ class V1::ChatsController < ApplicationController
     end
 
     def show
-        return render_error('token is required', 400) if params['application_token'].nil?
-        return render_error('chat number is required', 400) if params['number'].nil?
+        logger.info "Chat show started: #{params}"
+        if params['application_token'].blank?
+            logger.warn "Chats index cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
+        if params['number'].blank?
+            logger.warn "Chats index cancelled (chat number is required): #{params}"
+            return render_error('chat number is required', 400)
+        end
         @message = 'Chat found successfully'
         @status = 200
         chat = read_cache('chat-' + params['application_token'] + '-' + params['number'])
@@ -49,13 +64,13 @@ class V1::ChatsController < ApplicationController
             @status = response['status']
             if response['status'].to_i == 200
                 chat = response['data']['chat'].merge({messages: response['data']['messages']})
-                write_cache('chat-' + chat['token'] + '-' + chat['number'], chat)
+                write_cache("chat-#{chat['token']}-#{chat['number']}", chat)
             else
                 return render_error(response['data'], response['status'])
             end
         end
         @chat = Chat.new(chat)
-        @messages = chat['messages'].map{|m| Message.new(msg)}
+        @messages = chat[:messages].map{|msg| Message.new(msg)}
         render :show, status: :ok
     end
 end

@@ -1,5 +1,6 @@
 class V1::ApplicationsController < ApplicationController
     def create
+        logger.info "Application create started: #{application_params}"
         response = $writeClient.call({action: 'application.create', params: application_params})
         @status = response['status']
         if response['status'].to_i == 201
@@ -12,7 +13,11 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def show
-        return render_error('token is required', 400) if params['token'].nil?
+        logger.info "Application show started: #{params}"
+        if params['token'].blank?
+            logger.warn "Application show cancelled (token is required): #{params}"
+            return render_error('token is required', 400)
+        end
         @message = 'Application found successfully'
         @status = 200
         application = read_cache('application-' + params['token'])
@@ -32,7 +37,11 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def update
-        return render_error('token is required', 400) if params['token'].nil?
+        logger.info "Application update started: #{application_params}"
+        if params['token'].blank?
+            logger.warn "Application update cancelled (token is required): #{application_params}"
+            return render_error('token is required', 400)
+        end
         response = $writeClient.call({action: 'application.update', params: params})
         @status = response['status']
         if response['status'].to_i == 200

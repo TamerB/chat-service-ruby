@@ -5,24 +5,25 @@ This service provides a REST API in which users can control applications, applic
 
 This service has the following API endpoints:
 ```
-/readyz                                                                     GET
-/healthz                                                                    GET
+/readyz                                                                                     GET
+/healthz                                                                                    GET
 
-/api-docs                                                                   GET
+/api-docs                                                                                   GET
 
-/applications/{name}                                                        POST
-/applications/{token}                                                       PUT
-/applications/{token}                                                       GET
+/applications/{name}                                                                        POST
+/applications/{token}                                                                       PUT
+/applications/{token}                                                                       GET
 
-/applications/{application_token}/chats                                     POST
-/applications/{application_token}/chats/{number}                            GET
+/applications/{application_token}/chats                                                     POST
+/applications/{application_token}/chats/(page/:page)                                        GET
+/applications/{application_token}/chats/{number}                                            GET
 
-/applications/{application_token}/chats/{chat_number}/messages              POST
-/applications/{application_token}/chats/{chat_number}/messages/{number}     PUT
-/applications/{application_token}/chats/{chat_number}/messages              GET
-/applications/{application_token}/chats/{chat_number}/messages/{number}     GET
+/applications/{application_token}/chats/{chat_number}/messages                              POST
+/applications/{application_token}/chats/{chat_number}/messages/{number}                     PUT
+/applications/{application_token}/chats/{chat_number}/messages/(page/:page)                 GET
+/applications/{application_token}/chats/{chat_number}/messages/{number}                     GET
 
-/applications/{application_token}/chats/{chat_number}/search/{phrase}       GET
+/applications/{application_token}/chats/{chat_number}/search/{phrase}/(page/:page)          GET
 ```
 
 ## Developer setup
@@ -47,6 +48,10 @@ rake db:migrate # or rails db:migrate
 
 export PORT=<e.g. 3000>
 export MQ_HOST=<e.g. 127.0.0.1>
+export REDIS_HOST=<e.g. 127.0.0.1>
+export REDIS_PORT=<e.g. 6379>
+export REDIS_PASS=<e.g. my_master_password>
+export REDIS_DB=<e.g. 0>
 
 rails s
 ```
@@ -55,7 +60,15 @@ rails s
 #### `PORT`
 Ports which the service will be listening on to `http` requests.
 #### `MQ_HOST`
-RabbitMQ host
+RabbitMQ host.
+#### `REDIS_HOST`
+Redis host.
+#### `REDIS_PORT`
+Redis port.
+#### `REDIS_PASS`
+Redis password.
+#### `REDIS_DB`
+Redis database (e.g. 0, 1, etc).
 
 ## Build Docker image
 From the project's root directory, run the following command in terminal

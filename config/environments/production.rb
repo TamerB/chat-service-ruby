@@ -60,9 +60,8 @@ Rails.application.configure do
     write_timeout:      0.2, # Defaults to 1 second
     reconnect_attempts: 1,
     error_handler: -> (method:, returning:, exception:) {
-      # Report errors to Sentry as warnings
-      Raven.capture_exception exception, level: 'warning',
-        tags: { method: method, returning: returning }
+      cache_error = {method: method, returning: returning, exception: exception}
+      puts cache_error
     }
   }
 
@@ -95,6 +94,7 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
+  config.logger = Logger.new(STDOUT)
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
