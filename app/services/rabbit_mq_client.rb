@@ -22,7 +22,7 @@ class RabbitMqClient
                          reply_to: reply_queue.name)
     
         # wait for the signal to continue the execution
-        lock.synchronize { condition.wait(lock) }
+        lock.synchronize { condition.wait(lock, 5.seconds) }
     
         response
     end

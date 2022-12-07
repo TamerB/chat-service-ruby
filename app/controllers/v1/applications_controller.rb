@@ -1,7 +1,11 @@
 class V1::ApplicationsController < ApplicationController
     def create
-        logger.info "Application create started: #{application_params}"
+        prefix = 'Application create'
+        logger.info "#{prefix} started: #{application_params}"
         response = $writeClient.call({action: 'application.create', params: application_params})
+        if response.blank?
+            return render_internal_error("#{prefix} cancelled (writer servise not responding): #{application_params}")
+        end
         @status = response['status']
         if response['status'].to_i == 201
             @application = Application.new(response['data'])
@@ -13,9 +17,10 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def show
-        logger.info "Application show started: #{params}"
+        prefix = 'Application show'
+        logger.info "#{prefix} started: #{params}"
         if params['token'].blank?
-            logger.warn "Application show cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         @message = 'Application found successfully'
@@ -23,6 +28,9 @@ class V1::ApplicationsController < ApplicationController
         application = read_cache('application-' + params['token'])
         if application.blank?
             response = $readClient.call({action: 'application.show', params: params['token']})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 application = response['data']['application'].merge({chats: response['data']['chats']})
@@ -37,12 +45,16 @@ class V1::ApplicationsController < ApplicationController
     end
 
     def update
-        logger.info "Application update started: #{application_params}"
+        prefix = 'Application update'
+        logger.info "#{prefix} started: #{params}"
         if params['token'].blank?
-            logger.warn "Application update cancelled (token is required): #{application_params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         response = $writeClient.call({action: 'application.update', params: params})
+        if response.blank?
+            return render_internal_error("#{prefix} cancelled (writer servise not responding) : #{params}")
+        end
         @status = response['status']
         if response['status'].to_i == 200
             remove_cache('application-' + params['token'])

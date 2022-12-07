@@ -1,11 +1,15 @@
 class V1::ChatsController < ApplicationController
     def create
-        logger.info "Chat create started: #{params}"
+        prefix = "Chat create"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Chat create cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         response = $writeClient.call({action: 'chat.create', params: params['application_token']})
+        if response.blank?
+            return render_internal_error("#{prefix} cancelled (writer servise not responding) : #{params}")
+        end
         @status = response['status']
         if response['status'].to_i == 201
             remove_cache('application-' + params['application_token'])
@@ -19,9 +23,10 @@ class V1::ChatsController < ApplicationController
     end
 
     def index
-        logger.info "Chats index started: #{params}"
+        prefix = "Chat index"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Chats index cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         @message = 'Chats found successfully'
@@ -29,6 +34,9 @@ class V1::ChatsController < ApplicationController
         temp = read_cache('chats-' + params['application_token'] + '-' + (params['page'] || ''))
         if temp.blank?
             response = $readClient.call({action: 'chat.index', params: params})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 chats = response['data']['chats']
@@ -47,13 +55,14 @@ class V1::ChatsController < ApplicationController
     end
 
     def show
-        logger.info "Chat show started: #{params}"
+        prefix = "Chat show"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Chats index cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['number'].blank?
-            logger.warn "Chats index cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         @message = 'Chat found successfully'
@@ -61,6 +70,9 @@ class V1::ChatsController < ApplicationController
         chat = read_cache('chat-' + params['application_token'] + '-' + params['number'])
         if chat.blank?
             response = $readClient.call({action: 'chat.show', params: params})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 chat = response['data']['chat'].merge({messages: response['data']['messages']})

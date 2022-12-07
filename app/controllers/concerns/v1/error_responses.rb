@@ -4,8 +4,13 @@ module V1::ErrorResponses
         
         def render_error(message, code)
             @message = message
-            @code = code
-            render "v1/error", status: @code
+            @status = code
+            render "v1/error", status: @status
+        end
+
+        def render_internal_error(message)
+            logger.error message
+            render_error('Something went wrong. please try again later', 500)
         end
     end
 end

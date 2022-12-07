@@ -1,19 +1,23 @@
 class V1::MessagesController < ApplicationController
     def create
-        logger.info "Message create started: #{params}"
+        prefix = 'Message create'
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Message create cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['chat_number'].blank?
-            logger.warn "Message create cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         if params['body'].blank?
-            logger.warn "Message create cancelled (body is required): #{params}"
+            logger.warn "#{prefix} cancelled (body is required): #{params}"
             return render_error('body is required', 400)
         end
         response = $writeClient.call({action: 'message.create', params: params})
+        if response.blank?
+            return render_internal_error("#{prefix} cancelled (writer servise not responding) : #{params}")
+        end
         @status = response['status']
         if response['status'].to_i == 201
             remove_cache('chat-' + params['application_token'] + '-' + params['chat_number'])
@@ -27,24 +31,28 @@ class V1::MessagesController < ApplicationController
     end
 
     def update
-        logger.info "Message update started: #{params}"
+        prefix = "Message update"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Message update cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['chat_number'].blank?
-            logger.warn "Message update cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         if params['number'].blank?
-            logger.warn "Message update cancelled (message number is required): #{params}"
+            logger.warn "#{prefix} cancelled (message number is required): #{params}"
             return render_error('message number is required', 400)
         end
         if params['body'].blank?
-            logger.warn "Message update cancelled (body is required): #{params}"
+            logger.warn "#{prefix} cancelled (body is required): #{params}"
             return render_error('body is required', 400)
         end
         response = $writeClient.call({action: 'message.update', params: params})
+        if response.blank?
+            return render_internal_error("#{prefix} cancelled (writer servise not responding) : #{params}")
+        end
         @status = response['status']
         if response['status'].to_i == 200
             remove_cache('chat-' + params['application_token'] + '-' + params['chat_number'])
@@ -59,13 +67,14 @@ class V1::MessagesController < ApplicationController
     end
 
     def index
-        logger.info "Messages index started: #{params}"
+        prefix = "Messages index"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
             logger.warn "Messages index cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['chat_number'].blank?
-            logger.warn "Messages index cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         @message = 'Messages found successfully'
@@ -73,6 +82,9 @@ class V1::MessagesController < ApplicationController
         temp = read_cache('msgs-' + params['application_token'] + '-' + params['chat_number'] + '-' + (params['page'] || ''))
         if temp.blank?
             response = $readClient.call({action: 'message.index', params: params})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 messages = response['data']['messages']
@@ -91,17 +103,18 @@ class V1::MessagesController < ApplicationController
     end
 
     def show
-        logger.info "Message show started: #{params}"
+        prefix = "Message show"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Message show cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['chat_number'].blank?
-            logger.warn "Message show cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         if params['number'].blank?
-            logger.warn "Message show cancelled (message number is required): #{params}"
+            logger.warn "#{prefix} cancelled (message number is required): #{params}"
             return render_error('message number is required', 400)
         end
         @message = 'Message found successfully'
@@ -109,6 +122,9 @@ class V1::MessagesController < ApplicationController
         message_data = read_cache('msg-' + params['application_token'] + '-' + params['chat_number'] + '-' + params['number'])
         if message_data.blank?
             response = $readClient.call({action: 'message.show', params: params})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 message_data = response['data']
@@ -122,13 +138,14 @@ class V1::MessagesController < ApplicationController
     end
 
     def search
-        logger.info "Messages search started: #{params}"
+        prefix = "Message search"
+        logger.info "#{prefix} started: #{params}"
         if params['application_token'].blank?
-            logger.warn "Messages search cancelled (token is required): #{params}"
+            logger.warn "#{prefix} cancelled (token is required): #{params}"
             return render_error('token is required', 400)
         end
         if params['chat_number'].blank?
-            logger.warn "Messages search cancelled (chat number is required): #{params}"
+            logger.warn "#{prefix} cancelled (chat number is required): #{params}"
             return render_error('chat number is required', 400)
         end
         @message = 'Messages found successfully'
@@ -136,6 +153,9 @@ class V1::MessagesController < ApplicationController
         temp = read_cache('msgs-' + params['application_token'] + '-' + params['chat_number'] + '-' + 'search-' + (params['page'] || ''))
         if temp.blank?
             response = $readClient.call({action: 'message.search', params: params})
+            if response.blank?
+                return render_internal_error("#{prefix} cancelled (reader servise not responding) : #{params}")
+            end
             @status = response['status']
             if response['status'].to_i == 200
                 messages = response['data']['messages']
