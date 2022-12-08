@@ -1,27 +1,30 @@
+# frozen_string_literal: true
+
 require 'swagger_helper'
 
 RSpec.describe 'v1/applications', type: :request do
-
-  path "/v1/applications" do
-    post "create application" do
-      tags "applications"
-      consumes "application/json"
-      produces "application/json"
+  path '/v1/applications' do
+    post 'create application' do
+      tags 'applications'
+      consumes 'application/json'
+      produces 'application/json'
       parameter name: :application, in: :body, schema: {
         type: :object,
         properties: {
-          name: { type: :string, minLength: 5, maxLength: 20 },
+          name: { type: :string, minLength: 5, maxLength: 20 }
         },
-        required: ["name"],
+        required: %w[name]
       }
       response '201', 'appliction created' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
-                application: { type: :object,
+                application: {
+                  type: :object,
                   properties: {
                     token: { type: :string },
                     name: { type: :string },
@@ -33,7 +36,7 @@ RSpec.describe 'v1/applications', type: :request do
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:name) { 'abcdef' }
 
         after do |example|
@@ -43,31 +46,33 @@ RSpec.describe 'v1/applications', type: :request do
             }
           }
         end
+
         run_test!
       end
-      response "400", "bad request" do
+      response '400', 'bad request' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
     end
   end
 
-  path "/v1/applications/{token}" do
+  path '/v1/applications/{token}' do
     parameter name: 'token', in: :path, type: :string, description: 'application token'
 
-    get "get application" do
-      tags "applications"
+    get 'get application' do
+      tags 'applications'
       produces 'application/json'
       response '200', 'appliction found' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
                 application: { type: :object,
                   properties: {
@@ -76,8 +81,10 @@ RSpec.describe 'v1/applications', type: :request do
                     chats_number: { type: :integer },
                     created_at: { type: :string },
                     updated_at: { type: :string },
-                    chats: { type: :array,
-                       items: { type: :object,
+                    chats: {
+                      type: :array,
+                      items: {
+                        type: :object,
                         properties: {
                           number: { type: :integer },
                           messages_number: { type: :integer },
@@ -86,13 +93,11 @@ RSpec.describe 'v1/applications', type: :request do
                         }
                       }
                     }
-
-                  }
-                }
+                  } }
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:token) { '123' }
 
         after do |example|
@@ -102,39 +107,43 @@ RSpec.describe 'v1/applications', type: :request do
             }
           }
         end
+
         run_test!
       end
-      response "404", "application not found" do
+      response '404', 'application not found' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:application) { { token: 'foo' } }
+
         run_test!
       end
     end
 
-    put "update application" do
-      tags "applications"
-      consumes "application/json"
-      produces "application/json"
+    put 'update application' do
+      tags 'applications'
+      consumes 'application/json'
+      produces 'application/json'
       parameter name: :application, in: :body, schema: {
         type: :object,
         properties: {
-          name: { type: :string, minLength: 5, maxLength: 20 },
+          name: { type: :string, minLength: 5, maxLength: 20 }
         },
-        required: ["name"],
+        required: %w[name]
       }
       response '200', 'appliction updated' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
-                application: { type: :object,
+                application: {
+                  type: :object,
                   properties: {
                     token: { type: :string },
                     name: { type: :string },
@@ -146,17 +155,18 @@ RSpec.describe 'v1/applications', type: :request do
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:application) { { name: 'foo-foo', token: 'foo-foo' } }
+
         run_test!
       end
-      response "400", "bad request" do
+      response '400', 'bad request' do
         schema type: :object,
-          properties: {
-            status: { type: :string },
-            message: { type: :string }
-          },
-          required: [ 'status', 'message' ]
+        properties: {
+          status: { type: :string },
+          message: { type: :string }
+        },
+        required: %w[status message]
         let(:token) { '123' }
         let(:name) { 'fedcba' }
 
@@ -167,15 +177,16 @@ RSpec.describe 'v1/applications', type: :request do
             }
           }
         end
+
         run_test!
       end
-      response "404", "application not found" do
+      response '404', 'application not found' do
         schema type: :object,
           properties: {
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
     end
   end

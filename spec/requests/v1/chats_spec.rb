@@ -1,7 +1,6 @@
 require 'swagger_helper'
 
 RSpec.describe 'v1/chats', type: :request do
-
   path '/v1/applications/{application_token}/chats' do
     parameter name: 'application_token', in: :path, type: :string, description: 'application token'
 
@@ -13,9 +12,11 @@ RSpec.describe 'v1/chats', type: :request do
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
-                chat: { type: :object,
+                chat: {
+                  type: :object,
                   properties: {
                     token: { type: :string },
                     number: { type: :integer },
@@ -27,7 +28,7 @@ RSpec.describe 'v1/chats', type: :request do
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:application_token) { '123' }
 
         after do |example|
@@ -37,6 +38,7 @@ RSpec.describe 'v1/chats', type: :request do
             }
           }
         end
+
         run_test!
       end
       response "400", "bad request" do
@@ -45,7 +47,7 @@ RSpec.describe 'v1/chats', type: :request do
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
       response "404", "chat not found" do
         schema type: :object,
@@ -53,7 +55,7 @@ RSpec.describe 'v1/chats', type: :request do
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
     end
 
@@ -66,11 +68,14 @@ RSpec.describe 'v1/chats', type: :request do
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
-                page: { type: :integer},
-                chats: { type: :array,
-                  items: { type: :object,
+                page: { type: :integer },
+                chats: {
+                  type: :array,
+                  items: {
+                    type: :object,
                     properties: {
                       token: { type: :string },
                       number: { type: :integer },
@@ -84,7 +89,7 @@ RSpec.describe 'v1/chats', type: :request do
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:application_token) { '123' }
         let(:number) { '123' }
   
@@ -95,6 +100,7 @@ RSpec.describe 'v1/chats', type: :request do
             }
           }
         end
+
         run_test!
       end
       response "404", "not found" do
@@ -103,13 +109,12 @@ RSpec.describe 'v1/chats', type: :request do
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
     end
   end
 
   path '/v1/applications/{application_token}/chats/{number}' do
-    # You'll want to customize the parameter types...
     parameter name: 'application_token', in: :path, type: :string, description: 'application token'
     parameter name: 'number', in: :path, type: :string, description: 'chat number'
 
@@ -121,9 +126,11 @@ RSpec.describe 'v1/chats', type: :request do
           properties: {
             status: { type: :string },
             message: { type: :string },
-            data: { type: :object,
+            data: {
+              type: :object,
               properties: {
-                chat: { type: :object,
+                chat: {
+                  type: :object,
                   properties: {
                     token: { type: :string },
                     number: { type: :integer },
@@ -135,7 +142,7 @@ RSpec.describe 'v1/chats', type: :request do
               }
             }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
         let(:application_token) { '123' }
         let(:number) { '123' }
 
@@ -146,6 +153,7 @@ RSpec.describe 'v1/chats', type: :request do
             }
           }
         end
+
         run_test!
       end
       response "404", "chat not found" do
@@ -154,7 +162,7 @@ RSpec.describe 'v1/chats', type: :request do
             status: { type: :string },
             message: { type: :string }
           },
-          required: [ 'status', 'message' ]
+          required: %w[status message]
       end
     end
   end

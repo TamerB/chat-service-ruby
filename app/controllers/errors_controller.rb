@@ -1,5 +1,6 @@
+# ErrorsController hanles requests to undefined routes
 class ErrorsController < ApplicationController
-    def handle_root_not_found
-        render json: { message: "route not found", status: 404}, status: 404
-     end
+  def handle_root_not_found
+    render_error('route not found', 400)
+  end
 end

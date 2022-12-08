@@ -42,7 +42,3 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-$writeClient = RabbitMqClient.new('write_queue')
-puts "Writer initialized"
-$readClient = RabbitMqClient.new('read_queue')
-puts "Reader initialized"

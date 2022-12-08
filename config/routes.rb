@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     get '(page/:page)', action: :search, on: :collection, as: ''
   end
 
-  namespace :v1, defaults: { format: :json} do
+  namespace :v1, defaults: { format: :json } do
     resources :applications, param: :token, except: [:index, :destroy] do
       resources :chats, param: :number, only: [:index, :show, :create], concerns: :paginatable do
         resources :messages, param: :number, except: [:destroy], concerns: :paginatable do
