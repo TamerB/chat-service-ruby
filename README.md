@@ -76,7 +76,7 @@ From the project's root directory, run the following command in terminal
 docker build -t chat-master:latest .
 ```
 If you change the docker image name or tag, you will need to change them in `docker-compose.yml` too.
-# Note: The build might fail if `docker-compose/db/master/data` and `docker-compose/db/master/data` have files that require `sudo` permissions. In this case you need to move docker-compose direcory, docker-compose.yml, build.sh, stop.sh to another directory outside this directory and use them from there (which I recommend doing anyway).
+#### Note: The build might fail if `docker-compose/db/master/data` and `docker-compose/db/master/data` have files that require `sudo` permissions. In this case you need to move docker-compose direcory, docker-compose.yml, build.sh, stop.sh to another directory outside this directory and use them from there (which I recommend doing anyway).
 
 ## Test
 To run tests, from the project's root directory, run `rails test ./...` in terminal.
