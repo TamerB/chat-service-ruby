@@ -27,7 +27,21 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
 
-    config.cache_store = :null_store
+    config.cache_store = :redis_cache_store, { 
+      host: ENV['REDIS_HOST'],
+      port: ENV['REDIS_PORT'].to_i,
+      db: ENV['REDIS_DB'].to_i,
+      password: ENV['REDIS_PASS'],
+      namespace: 'cache',
+      connect_timeout:    30,  # Defaults to 20 seconds
+      read_timeout:       0.2, # Defaults to 1 second
+      write_timeout:      0.2, # Defaults to 1 second
+      reconnect_attempts: 1,
+      error_handler: -> (method:, returning:, exception:) {
+        cache_error = {method: method, returning: returning, exception: exception}
+        puts cache_error
+      }
+    }
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
